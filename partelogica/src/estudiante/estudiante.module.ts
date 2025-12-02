@@ -9,5 +9,6 @@ import { Persona } from 'src/persona/entities/persona.entity';
   imports: [TypeOrmModule.forFeature([Estudiante, Persona])],
   controllers: [EstudianteController],
   providers: [EstudianteService],
+  exports: [EstudianteService],
 })
 export class EstudianteModule {}

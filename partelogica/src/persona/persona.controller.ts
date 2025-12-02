@@ -12,6 +12,7 @@ import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Persona } from './entities/persona.entity';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('api/v1/persona')
 export class PersonaController {
@@ -25,9 +26,9 @@ export class PersonaController {
     type: Persona,
   })
   @ApiResponse({ status: 400, description: 'Datos invalidos' })
-  async create(@Body() createPersonaDto: CreatePersonaDto) {
+  async create(@Body() createPersonaDto: CreatePersonaDto): Promise<Persona> {
     const nuevaPersona = await this.personaService.create(createPersonaDto);
-    return nuevaPersona;
+    return plainToInstance(Persona, nuevaPersona);
   }
 
   @Get()
@@ -37,9 +38,9 @@ export class PersonaController {
     description: 'Lista de Personas',
     type: Persona,
   })
-  async findAll() {
+  async findAll(): Promise<Persona[]> {
     const personas = await this.personaService.findAll();
-    return personas;
+    return plainToInstance(Persona, personas);
   }
 
   @Get(':id')
@@ -50,9 +51,9 @@ export class PersonaController {
     type: Persona,
   })
   @ApiResponse({ status: 404, description: 'Persona no encontrada' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<Persona> {
     const persona = await this.personaService.findOne(+id);
-    return persona;
+    return plainToInstance(Persona, persona);
   }
 
   @Patch(':id')
@@ -66,19 +67,20 @@ export class PersonaController {
   async update(
     @Param('id') id: string,
     @Body() updatePersonaDto: UpdatePersonaDto,
-  ) {
+  ): Promise<Persona> {
     const personaActualizada = await this.personaService.update(
       +id,
       updatePersonaDto,
     );
-    return personaActualizada;
+    return plainToInstance(Persona, personaActualizada);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar Persona por ID' })
   @ApiResponse({ status: 204, description: 'Persona eliminada' })
   @ApiResponse({ status: 404, description: 'Persona no encontrada' })
-  async remove(@Param('id') id: string) {
-    await this.personaService.remove(+id);
+  async remove(@Param('id') id: string): Promise<Persona> {
+    const personaEliminada = await this.personaService.remove(+id);
+    return plainToInstance(Persona, personaEliminada);
   }
 }
