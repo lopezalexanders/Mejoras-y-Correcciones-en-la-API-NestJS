@@ -26,31 +26,61 @@ export class EstudianteController {
     type: Estudiante,
   })
   @ApiResponse({ status: 400, description: 'Datos invalidos' })
-  create(@Body() createEstudianteDto: CreateEstudianteDto) {
-    return this.estudianteService.create(createEstudianteDto);
+  async create(@Body() createEstudianteDto: CreateEstudianteDto) {
+    const nuevoEstudiante =
+      await this.estudianteService.create(createEstudianteDto);
+    return nuevoEstudiante;
   }
 
-  @ApiOperation({ summary: 'Listar Estudiantes' })
   @Get()
-  findAll() {
-    return this.estudianteService.findAll();
+  @ApiOperation({ summary: 'Listar Estudiantes' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de Estudiantes',
+    type: Estudiante,
+  })
+  async findAll() {
+    const estudiantes = await this.estudianteService.findAll();
+    return estudiantes;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.estudianteService.findOne(+id);
+  @ApiOperation({ summary: 'Buscar Estudiantes por ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Estudiante encontrado',
+    type: Estudiante,
+  })
+  @ApiResponse({ status: 404, description: 'Estudiante no encontrado' })
+  async findOne(@Param('id') id: string) {
+    const estudiante = await this.estudianteService.findOne(+id);
+    return estudiante;
   }
 
   @Patch(':id')
-  update(
+  @ApiOperation({ summary: 'Actualizar Estudiantes por ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Estudiante actualizado',
+    type: Estudiante,
+  })
+  @ApiResponse({ status: 404, description: 'Estudiante no encontrado' })
+  async update(
     @Param('id') id: string,
     @Body() updateEstudianteDto: UpdateEstudianteDto,
   ) {
-    return this.estudianteService.update(+id, updateEstudianteDto);
+    const estudianteActualizado = await this.estudianteService.update(
+      +id,
+      updateEstudianteDto,
+    );
+    return estudianteActualizado;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.estudianteService.remove(+id);
+  @ApiOperation({ summary: 'Eliminar Estudiantes por ID' })
+  @ApiResponse({ status: 204, description: 'Estudiante eliminado' })
+  @ApiResponse({ status: 404, description: 'Estudiante no encontrado' })
+  async remove(@Param('id') id: string) {
+    await this.estudianteService.remove(+id);
   }
 }
