@@ -10,10 +10,18 @@ import {
 import { PersonaService } from './persona.service';
 import { CreatePersonaDto } from './dto/create-persona.dto';
 import { UpdatePersonaDto } from './dto/update-persona.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Persona } from './entities/persona.entity';
+import {
+  ApiExtraModels,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+//import { Persona } from './entities/persona.entity';
 import { plainToInstance } from 'class-transformer';
+import { ResponsePersonaDto } from './dto/response-persona.dto';
 
+@ApiTags('Persona')
+@ApiExtraModels(CreatePersonaDto, UpdatePersonaDto, ResponsePersonaDto)
 @Controller('api/v1/persona')
 export class PersonaController {
   constructor(private readonly personaService: PersonaService) {}
@@ -23,12 +31,14 @@ export class PersonaController {
   @ApiResponse({
     status: 201,
     description: 'Persona creada',
-    type: Persona,
+    type: ResponsePersonaDto,
   })
   @ApiResponse({ status: 400, description: 'Datos invalidos' })
-  async create(@Body() createPersonaDto: CreatePersonaDto): Promise<Persona> {
+  async create(
+    @Body() createPersonaDto: CreatePersonaDto,
+  ): Promise<ResponsePersonaDto> {
     const nuevaPersona = await this.personaService.create(createPersonaDto);
-    return plainToInstance(Persona, nuevaPersona);
+    return plainToInstance(ResponsePersonaDto, nuevaPersona);
   }
 
   @Get()
@@ -36,11 +46,11 @@ export class PersonaController {
   @ApiResponse({
     status: 200,
     description: 'Lista de Personas',
-    type: Persona,
+    type: ResponsePersonaDto,
   })
-  async findAll(): Promise<Persona[]> {
+  async findAll(): Promise<ResponsePersonaDto[]> {
     const personas = await this.personaService.findAll();
-    return plainToInstance(Persona, personas);
+    return plainToInstance(ResponsePersonaDto, personas);
   }
 
   @Get(':id')
@@ -48,12 +58,12 @@ export class PersonaController {
   @ApiResponse({
     status: 200,
     description: 'Persona encontrada',
-    type: Persona,
+    type: ResponsePersonaDto,
   })
   @ApiResponse({ status: 404, description: 'Persona no encontrada' })
-  async findOne(@Param('id') id: string): Promise<Persona> {
+  async findOne(@Param('id') id: string): Promise<ResponsePersonaDto> {
     const persona = await this.personaService.findOne(+id);
-    return plainToInstance(Persona, persona);
+    return plainToInstance(ResponsePersonaDto, persona);
   }
 
   @Patch(':id')
@@ -61,26 +71,26 @@ export class PersonaController {
   @ApiResponse({
     status: 200,
     description: 'Persona actualizada',
-    type: Persona,
+    type: ResponsePersonaDto,
   })
   @ApiResponse({ status: 404, description: 'Persona no encontrada' })
   async update(
     @Param('id') id: string,
     @Body() updatePersonaDto: UpdatePersonaDto,
-  ): Promise<Persona> {
+  ): Promise<ResponsePersonaDto> {
     const personaActualizada = await this.personaService.update(
       +id,
       updatePersonaDto,
     );
-    return plainToInstance(Persona, personaActualizada);
+    return plainToInstance(ResponsePersonaDto, personaActualizada);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar Persona por ID' })
   @ApiResponse({ status: 204, description: 'Persona eliminada' })
   @ApiResponse({ status: 404, description: 'Persona no encontrada' })
-  async remove(@Param('id') id: string): Promise<Persona> {
+  async remove(@Param('id') id: string): Promise<ResponsePersonaDto> {
     const personaEliminada = await this.personaService.remove(+id);
-    return plainToInstance(Persona, personaEliminada);
+    return plainToInstance(ResponsePersonaDto, personaEliminada);
   }
 }

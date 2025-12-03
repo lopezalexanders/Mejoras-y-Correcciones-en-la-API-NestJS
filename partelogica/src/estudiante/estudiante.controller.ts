@@ -10,11 +10,17 @@ import {
 import { EstudianteService } from './estudiante.service';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Estudiante } from './entities/estudiante.entity';
+import {
+  ApiExtraModels,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
+import { EstudianteResponseDto } from './dto/response-estudiante.dto';
 
 @ApiTags('Estudiante')
+@ApiExtraModels(CreateEstudianteDto, UpdateEstudianteDto, EstudianteResponseDto)
 @Controller('api/v1/estudiante')
 export class EstudianteController {
   constructor(private readonly estudianteService: EstudianteService) {}
@@ -24,15 +30,15 @@ export class EstudianteController {
   @ApiResponse({
     status: 201,
     description: 'Estudiante creado',
-    type: Estudiante,
+    type: CreateEstudianteDto,
   })
   @ApiResponse({ status: 400, description: 'Datos invalidos' })
   async create(
     @Body() createEstudianteDto: CreateEstudianteDto,
-  ): Promise<Estudiante> {
+  ): Promise<CreateEstudianteDto> {
     const nuevoEstudiante =
       await this.estudianteService.create(createEstudianteDto);
-    return plainToInstance(Estudiante, nuevoEstudiante);
+    return plainToInstance(CreateEstudianteDto, nuevoEstudiante);
   }
 
   @Get()
@@ -40,11 +46,11 @@ export class EstudianteController {
   @ApiResponse({
     status: 200,
     description: 'Lista de Estudiantes',
-    type: Estudiante,
+    type: EstudianteResponseDto,
   })
-  async findAll(): Promise<Estudiante[]> {
+  async findAll(): Promise<EstudianteResponseDto[]> {
     const estudiantes = await this.estudianteService.findAll();
-    return plainToInstance(Estudiante, estudiantes);
+    return plainToInstance(EstudianteResponseDto, estudiantes);
   }
 
   @Get(':id')
@@ -52,12 +58,12 @@ export class EstudianteController {
   @ApiResponse({
     status: 200,
     description: 'Estudiante encontrado',
-    type: Estudiante,
+    type: EstudianteResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Estudiante no encontrado' })
-  async findOne(@Param('id') id: string): Promise<Estudiante> {
+  async findOne(@Param('id') id: string): Promise<EstudianteResponseDto> {
     const estudiante = await this.estudianteService.findOne(+id);
-    return plainToInstance(Estudiante, estudiante);
+    return plainToInstance(EstudianteResponseDto, estudiante);
   }
 
   @Patch(':id')
@@ -65,26 +71,26 @@ export class EstudianteController {
   @ApiResponse({
     status: 200,
     description: 'Estudiante actualizado',
-    type: Estudiante,
+    type: EstudianteResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Estudiante no encontrado' })
   async update(
     @Param('id') id: string,
     @Body() updateEstudianteDto: UpdateEstudianteDto,
-  ): Promise<Estudiante> {
+  ): Promise<UpdateEstudianteDto> {
     const estudianteActualizado = await this.estudianteService.update(
       +id,
       updateEstudianteDto,
     );
-    return plainToInstance(Estudiante, estudianteActualizado);
+    return plainToInstance(UpdateEstudianteDto, estudianteActualizado);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar Estudiantes por ID' })
   @ApiResponse({ status: 204, description: 'Estudiante eliminado' })
   @ApiResponse({ status: 404, description: 'Estudiante no encontrado' })
-  async remove(@Param('id') id: string): Promise<Estudiante> {
+  async remove(@Param('id') id: string): Promise<EstudianteResponseDto> {
     const estudianteEliminado = await this.estudianteService.remove(+id);
-    return plainToInstance(Estudiante, estudianteEliminado);
+    return plainToInstance(EstudianteResponseDto, estudianteEliminado);
   }
 }

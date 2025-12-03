@@ -47,7 +47,7 @@ export class EstudianteService {
   async update(
     id: number,
     updateEstudianteDto: UpdateEstudianteDto,
-  ): Promise<Estudiante> {
+  ): Promise<UpdateEstudianteDto> {
     const estudiante = await this.findOne(id);
     if (updateEstudianteDto.personaId) {
       const persona = await this.personaRepository.findOne({
